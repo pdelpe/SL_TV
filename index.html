@@ -1,3 +1,7 @@
+Here is the updated code. The four channels have been removed, leaving exactly 12 streams.
+
+To guarantee the buttons fit entirely on one iPad screen without any horizontal scrolling, the bottom bar has been restructured into a compact CSS Grid (2 rows of 6 buttons). This mathematically forces all 12 channels to scale and lock perfectly into the available space regardless of your iPad's orientation.
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +18,7 @@
     html, body {
       width: 100%;
       height: 100%;
-      height: 100dvh; /* Uses dynamic viewport height for iOS */
+      height: 100dvh;
       overflow: hidden;
       background-color: #000000;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -22,13 +26,12 @@
       position: relative;
     }
 
-    /* Video section uses all remaining space above the bottom bar */
     #player-container {
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
-      bottom: 70px; /* Leaves 70px at the bottom specifically for channel buttons */
+      bottom: 100px; /* Space reserved for the 2-row channel grid */
       background-color: #000000;
       display: flex;
       justify-content: center;
@@ -42,7 +45,6 @@
       background-color: #000000;
     }
 
-    /* Current channel badge on top of video */
     #current-channel {
       position: absolute;
       top: 15px;
@@ -56,40 +58,38 @@
       z-index: 10;
     }
 
-    /* Bottom channel bar locked to bottom of screen */
+    /* Fixed grid layout to compress all 12 buttons onto the screen */
     #bottom-bar {
       position: absolute;
       bottom: 0;
       left: 0;
       right: 0;
-      height: 70px; /* Fixed height so Safari cannot compress or push it off */
+      height: 100px; 
       background-color: #1c1c1e;
-      display: flex;
-      align-items: center;
-      padding: 0 16px;
-      gap: 10px;
-      overflow-x: auto;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr); /* 6 columns */
+      grid-template-rows: repeat(2, 1fr);    /* 2 rows */
+      gap: 6px;
+      padding: 8px 12px;
       border-top: 1px solid #2c2c2e;
       z-index: 100;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-    }
-
-    #bottom-bar::-webkit-scrollbar {
-      display: none;
     }
 
     .channel-btn {
       background-color: #2c2c2e;
       color: #ffffff;
       border: 1px solid #3a3a3c;
-      padding: 10px 16px;
-      border-radius: 8px;
-      font-size: 0.85rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
       font-weight: 500;
       cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
       white-space: nowrap;
-      flex-shrink: 0;
+      overflow: hidden;
+      text-overflow: ellipsis; /* Adds '...' if a name is too long for the button */
       transition: background-color 0.15s ease, border-color 0.15s ease;
       -webkit-tap-highlight-color: transparent;
     }
@@ -103,16 +103,15 @@
 </head>
 <body>
 
-  <!-- Main Video Container -->
   <div id="player-container">
     <div id="current-channel">Select a channel</div>
     <video id="video-player" controls playsinline autoplay></video>
   </div>
 
-  <!-- Locked Bottom Channel Bar -->
   <div id="bottom-bar"></div>
 
   <script>
+    // Reduced to 12 channels
     const streams = [
       { name: "Charana TV", url: "https://str001.peotv.lk/ndrm/live/charana/master.m3u8" },
       { name: "Sirasa TV", url: "https://str001.peotv.lk/ndrm/live/sirasa/master.m3u8" },
@@ -125,11 +124,7 @@
       { name: "Supreme TV", url: "https://str001.peotv.lk/ndrm/live/tv-supreme/master.m3u8" },
       { name: "Event TV", url: "https://str001.peotv.lk/ndrm/live/event-tv/master.m3u8" },
       { name: "Ada Derana 24", url: "https://str001.peotv.lk/ndrm/live/ada-derana-24/master.m3u8" },
-      { name: "Vasantham TV", url: "https://str001.peotv.lk/ndrm/live/vasantham/master.m3u8" },
-      { name: "Shakthi TV", url: "https://str001.peotv.lk/ndrm/live/shakthi/master.m3u8" },
-      { name: "The Buddhist", url: "https://str001.peotv.lk/ndrm/live/buddhist/master.m3u8" },
-      { name: "Shraddha TV", url: "https://str001.peotv.lk/ndrm/live/shraddha/master.m3u8" },
-      { name: "Verbum TV", url: "https://str001.peotv.lk/ndrm/live/verbum/master.m3u8" }
+      { name: "The Buddhist", url: "https://str001.peotv.lk/ndrm/live/buddhist/master.m3u8" }
     ];
 
     const video = document.getElementById('video-player');
